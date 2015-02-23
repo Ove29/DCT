@@ -1,0 +1,64 @@
+CREATE TABLE `gateway` (
+  `gw_id` tinyint(4) NOT NULL AUTO_INCREMENT,
+  `gw_name` char(20) NOT NULL,
+  `gw_ip` varchar(15) NOT NULL DEFAULT '000.000.000.000',
+  `gw_snmp_version` enum('1','2c','3') NOT NULL DEFAULT '1',
+  `gw_snmp_community` varchar(15) NOT NULL DEFAULT '',
+  `gw_location` text NOT NULL,
+  `gw_description` text NOT NULL,
+  PRIMARY KEY (`gw_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `dp_meter` (
+  `dp_meter_id` int(4) unsigned NOT NULL,
+  `dp_meter_name` text NOT NULL,
+  `gw_id` smallint(4) unsigned NOT NULL,
+  PRIMARY KEY (`dp_meter_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `output` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `dp_meter_id` int(4) unsigned NOT NULL,
+  `output_id` int(2) unsigned zerofill NOT NULL,
+  `customer_id` int(4) unsigned DEFAULT '0',
+  `rack_id` char(7) DEFAULT '0000000',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `use_month` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `output_id` smallint(4) unsigned NOT NULL,
+  `rack_id` char(7) DEFAULT '0000000',
+  `customer_id` int(4) unsigned DEFAULT '0',
+  `total` int(10) unsigned DEFAULT '0',
+  `subtotal` int(10) unsigned DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY (`time`,`customer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `collect_in` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `output_id` smallint(4) unsigned NOT NULL,
+  `factor` decimal(6,2),
+  `current` decimal(5,2),
+  `peak` decimal(5,2),
+  `voltage` decimal(5,2),
+  PRIMARY KEY (`id`),
+  KEY (`time`,`output_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `customer_account` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `customer_id` int(4) unsigned DEFAULT '0',
+  `rack_id` char(7) DEFAULT '0000000',
+  `output_id` smallint(4) unsigned NOT NULL,
+  `total_last` int(10) unsigned DEFAULT '0',
+  `total_now` int(10) unsigned DEFAULT '0',
+  `price` decimal(2,2),
+  `level` smallint(1) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY (`customer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
